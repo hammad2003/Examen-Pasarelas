@@ -30,20 +30,23 @@ sudo iptables -P FORWARD ACCEPT
 
 echo "5- Aplicando NUEVAS REGLAS especificas...";
 
-# http://oceanpark.com/notes/firewall_example.html
-## Forward all packets from eth1 (internal network) to eth0 (the internet).
-sudo iptables -A FORWARD -i eth0:1 -o eth0 -j ACCEPT
+#-j: La regla que se utilizara en las iptables specificadas.
+#-i
+sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -j ACCEPT
 
-# Forward packets that are part of existing and related connections from eth0 to eth1.
-sudo iptables -A FORWARD -i eth0 -o eth0:1 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-# Permit packets in to firewall itself that are part of existing and related connections.
+sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+
 sudo iptables -A INPUT -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-#Allow all inputs to firewall from the internal network and local interfaces
+
 sudo iptables -A INPUT -i eth0:1 -s 0/0 -d 0/0 -j ACCEPT
 
-#Alternative to SNAT -- MASQUERADE
+
+
+#El nat se basa en una tabla interna en los routers, la cual tiene la funcion de asociar la IP privada de los dispositivos de la red local con una IP publica
+#El MASQUERADE para enmascarar la dirección IP privada de un nodo con la dirección IP del cortafuegos/puerta de enlace.
 sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 echo "6- Miramos si esta activo el DNSMASQUERADE..."
