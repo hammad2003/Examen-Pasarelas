@@ -17,16 +17,16 @@ echo "Podemos indicar que el nameserver tambien es el proxy del centro"
 sudo echo -n nameserver 8.8.8.8 > /etc/resolv.conf
 sudo echo 1 > /proc/sys/net/ipv4/ip_forward
 
-echo "3- Aplicando normas por defecto en pasarela...";
-sudo iptables -P INPUT ACCEPT
-sudo iptables -P OUTPUT ACCEPT
-sudo iptables -P FORWARD ACCEPT
-
 echo "4- Aplicando FLUSH en las reglas especificas...";
 sudo iptables -F INPUT
 sudo iptables -F FORWARD
 sudo iptables -F OUTPUT
 sudo iptables -F -t nat
+
+echo "3- Aplicando normas por defecto en pasarela...";
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
 
 echo "5- Aplicando NUEVAS REGLAS especificas...";
 
@@ -42,7 +42,6 @@ sudo iptables -A INPUT -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
 #Allow all inputs to firewall from the internal network and local interfaces
 sudo iptables -A INPUT -i eth0:1 -s 0/0 -d 0/0 -j ACCEPT
-sudo iptables -A INPUT -i lo -s 0/0 -d 0/0 -j ACCEPT
 
 #Alternative to SNAT -- MASQUERADE
 sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
